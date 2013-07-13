@@ -3,6 +3,7 @@ Built with IcedCoffeeScript and destined for redis-v.
 Very early days.
 
 Javascript:
+```
 graphdb = require('./graph')
 graphdb.getGraph('testGraph', function(graph){
 	graph.addInversion('husband', 'wife', function(){
@@ -11,10 +12,13 @@ graphdb.getGraph('testGraph', function(graph){
         })
     })
 })
+```
 
 Coffeescript:
+```
 graphdb = require("./graph")
 graphdb.getGraph "testGraph", (graph) ->
   graph.addInversion "husband", "wife", ->
     graph.addNode {id: "Rebecca", husband: ["Jonathon"]}, ->
       graph.getAllNodes true, console.dir
+```

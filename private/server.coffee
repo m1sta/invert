@@ -1,4 +1,3 @@
-require("source-map-support").install()
 express = require("express")
 io = require("socket.io")
 http = require("http")

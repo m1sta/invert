@@ -42,7 +42,7 @@ get['/test1'] = (request, response) ->
     response.end(JSON.stringify jonathonNode)
 
 post['/csv'] = (request, response) =>
-    graph = new redisGraph() #todo: new graph per file name
+    await redisGraph.getGraph "csv:" + request.files.csv.name, defer graph
 
     [headers, headerArrays] = [[], {}]
     csvFile = csv().from.stream(fs.createReadStream(request.files.csv.path))
@@ -54,10 +54,12 @@ post['/csv'] = (request, response) =>
             headerArrays[row[i]] = true for i in [1..row.length] when row[i] is row[i-1]
         else
             newNode = {}
-            for i in [1..row.length] when row[i]
+            for i in [0..row.length] when row[i]
                 if headerArrays[headers[i]]
                     if newNode[headers[i]] then newNode[headers[i]].push(row[i]) else newNode[headers[i]] = [row[i]]
                 else
                     newNode[headers[i]] = row[i]
             graph.addNode newNode
-    csvFile.on 'end', () => response.end({success:true, filename:request.files.csv.path})
+
+    csvFile.on 'end', () =>
+        response.end(JSON.stringify({success:true, filename:request.files.csv.path}))

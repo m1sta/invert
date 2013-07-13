@@ -180,44 +180,62 @@
   };
 
   post['/csv'] = function(request, response) {
-    var csvFile, graph, headerArrays, headers, _ref;
-    graph = new redisGraph();
-    _ref = [[], {}], headers = _ref[0], headerArrays = _ref[1];
-    csvFile = csv().from.stream(fs.createReadStream(request.files.csv.path));
-    csvFile.on('record', function(row, index) {
-      var i, newNode, _i, _j, _ref1, _ref2, _results;
-      console.log('#' + index + ' ' + JSON.stringify(row));
-      if (index === 0) {
-        headers = row;
-        _results = [];
-        for (i = _i = 1, _ref1 = row.length; 1 <= _ref1 ? _i <= _ref1 : _i >= _ref1; i = 1 <= _ref1 ? ++_i : --_i) {
-          if (row[i] === row[i - 1]) {
-            _results.push(headerArrays[row[i]] = true);
-          }
-        }
-        return _results;
-      } else {
-        newNode = {};
-        for (i = _j = 1, _ref2 = row.length; 1 <= _ref2 ? _j <= _ref2 : _j >= _ref2; i = 1 <= _ref2 ? ++_j : --_j) {
-          if (row[i]) {
-            if (headerArrays[headers[i]]) {
-              if (newNode[headers[i]]) {
-                newNode[headers[i]].push(row[i]);
-              } else {
-                newNode[headers[i]] = [row[i]];
-              }
-            } else {
-              newNode[headers[i]] = row[i];
+    var csvFile, graph, headerArrays, headers, ___iced_passed_deferral, __iced_deferrals, __iced_k;
+    __iced_k = __iced_k_noop;
+    ___iced_passed_deferral = iced.findDeferral(arguments);
+    (function(__iced_k) {
+      __iced_deferrals = new iced.Deferrals(__iced_k, {
+        parent: ___iced_passed_deferral,
+        filename: "routes.coffee"
+      });
+      redisGraph.getGraph("csv:" + request.files.csv.name, __iced_deferrals.defer({
+        assign_fn: (function() {
+          return function() {
+            return graph = arguments[0];
+          };
+        })(),
+        lineno: 44
+      }));
+      __iced_deferrals._fulfill();
+    })(function() {
+      var _ref;
+      _ref = [[], {}], headers = _ref[0], headerArrays = _ref[1];
+      csvFile = csv().from.stream(fs.createReadStream(request.files.csv.path));
+      csvFile.on('record', function(row, index) {
+        var i, newNode, _i, _j, _ref1, _ref2, _results;
+        console.log('#' + index + ' ' + JSON.stringify(row));
+        if (index === 0) {
+          headers = row;
+          _results = [];
+          for (i = _i = 1, _ref1 = row.length; 1 <= _ref1 ? _i <= _ref1 : _i >= _ref1; i = 1 <= _ref1 ? ++_i : --_i) {
+            if (row[i] === row[i - 1]) {
+              _results.push(headerArrays[row[i]] = true);
             }
           }
+          return _results;
+        } else {
+          newNode = {};
+          for (i = _j = 0, _ref2 = row.length; 0 <= _ref2 ? _j <= _ref2 : _j >= _ref2; i = 0 <= _ref2 ? ++_j : --_j) {
+            if (row[i]) {
+              if (headerArrays[headers[i]]) {
+                if (newNode[headers[i]]) {
+                  newNode[headers[i]].push(row[i]);
+                } else {
+                  newNode[headers[i]] = [row[i]];
+                }
+              } else {
+                newNode[headers[i]] = row[i];
+              }
+            }
+          }
+          return graph.addNode(newNode);
         }
-        return graph.addNode(newNode);
-      }
-    });
-    return csvFile.on('end', function() {
-      return response.end({
-        success: true,
-        filename: request.files.csv.path
+      });
+      return csvFile.on('end', function() {
+        return response.end(JSON.stringify({
+          success: true,
+          filename: request.files.csv.path
+        }));
       });
     });
   };

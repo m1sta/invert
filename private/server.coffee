@@ -1,4 +1,3 @@
-require("source-map-support").install()
 express = require("express")
 io = require("socket.io")
 http = require("http")
@@ -13,8 +12,7 @@ app.configure ->
     app.use express.methodOverride()
     app.use app.router
     app.use express.static("../public")
-    app.get "/", (req, res) ->
-        res.redirect "index.htm"
+    app.get "/", (req, res) -> res.redirect "index.htm"
 
     for key of routes.get
         app.get key, routes.get[key]

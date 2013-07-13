@@ -29,6 +29,16 @@ graphdb.getGraph "testGraph", (graph) ->
       graph.getAllNodes true, console.dir
 ```
 
+IcedCoffeeScript:
+
+```coffeescript
+graphdb = require("./graph")
+await graphdb.getGraph "testGraph", defer(graph)
+await graph.addInversion "husband", "wife", defer()
+await graph.addNode {id: "Rebecca", husband: ["Jonathon"]}, defer()
+graph.getAllNodes true, console.dir
+```
+
 Keep in mind:
 
  1. If an edge between nodes A and B has properties it should be modelled an intermediary node between A and B. 

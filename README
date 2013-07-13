@@ -24,3 +24,9 @@ graphdb.getGraph "testGraph", (graph) ->
     graph.addNode {id: "Rebecca", husband: ["Jonathon"]}, ->
       graph.getAllNodes true, console.dir
 ```
+
+```ruby
+require 'redcarpet'
+markdown = Redcarpet.new("Hello World!")
+puts markdown.to_html
+```

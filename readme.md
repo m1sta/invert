@@ -10,6 +10,10 @@ graphdb.getGraph('testGraph', function(graph){
 	graph.addInversion('husband', 'wife', function(){
     	graph.addNode({id:'Rebecca', husband:['Jonathon']}, function(){
         	graph.getAllNodes(true, console.dir)
+            /*[ 
+            { id: 'Jonathon', wife: [ 'Rebecca' ] }, 
+            { id: 'Rebecca', husband: [ 'Jonathon' ] } 
+            ]*/
         })
     })
 })

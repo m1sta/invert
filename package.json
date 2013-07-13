@@ -1,0 +1,10 @@
+{
+  "name": "tinklerlinks",
+  "version": "0.0.1",
+  "dependencies": {
+    "redis": "~0.8.3",
+    "socket.io": "~0.9.14",
+    "express": "~3.2.6",
+    "priority_queue": "~0.1.3"
+  }
+}

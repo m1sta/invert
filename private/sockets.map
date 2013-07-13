@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "sockets.js",
+  "sourceRoot": "",
+  "sources": [
+    "sockets.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;CAAA,KAAA;KAAA,OAAA;;CAAA;;CAAA,CAAA,CAAiB,GAAjB,CAAO;;CAAP,CAEA,CAAwB,CAAA,EAAjB,GAAkB,GAAlB;CACH,EAAA,CAAA,GAAO,uBAAP;CACO,CAA6B,EAApC,EAAM,KAAN,WAAA;CAJJ,EAEwB;;CAFxB,CAMA,CAAiB,CAAA,EAAV,GAAW;CACP,CAAiB,EAAxB,EAAM,IAAN,CAAA;CAPJ,EAMiB;CANjB"
+}

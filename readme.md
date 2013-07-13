@@ -30,5 +30,7 @@ graphdb.getGraph "testGraph", (graph) ->
 ```
 
 Keep in mind:
-1. If an edge between nodes A and B has properties it should be modelled an intermediary node between A and B. 
-2. Apply traversals against the graph by defining actions with the signature: (path, queue,sharedData, firstVisit)
+
+ 1. If an edge between nodes A and B has properties it should be modelled an intermediary node between A and B. 
+ 
+ 2. Apply traversals against the graph by defining actions with the signature: (path, queue,sharedData, firstVisit)

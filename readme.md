@@ -24,3 +24,5 @@ graphdb.getGraph "testGraph", (graph) ->
     graph.addNode {id: "Rebecca", husband: ["Jonathon"]}, ->
       graph.getAllNodes true, console.dir
 ```
+
+In this world if an edge between nodes A and B has properties it is actually an intermediary node between A and B. 

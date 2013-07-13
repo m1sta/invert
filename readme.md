@@ -29,4 +29,5 @@ graphdb.getGraph "testGraph", (graph) ->
       graph.getAllNodes true, console.dir
 ```
 
-In this world if an edge between nodes A and B has properties it is actually an intermediary node between A and B. 
+ - If an edge between nodes A and B has properties it should be modelled an intermediary node between A and B. 
+ - Apply traversals against the graph by defining actions with the signature: (path, queue,sharedData, firstVisit)

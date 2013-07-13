@@ -1,5 +1,5 @@
 A javascript + redis based graph library.
-Built with IcedCoffeeScript and destined for redis-v. 
+Built with IcedCoffeeScript and destined for redis-v8. 
 Very early days.
 
 Javascript:

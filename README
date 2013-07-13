@@ -1,4 +1,6 @@
-A javascript + redis based graph library, built with IcedCoffeeScript and destined for redis-v. Very early days.
+A javascript + redis based graph library.
+Built with IcedCoffeeScript and destined for redis-v. 
+Very early days.
 
 Javascript:
 graphdb = require('./graph')

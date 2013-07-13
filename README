@@ -4,7 +4,7 @@ Very early days.
 
 Javascript:
 
-```javascript
+    ```javascript
 graphdb = require('./graph')
 graphdb.getGraph('testGraph', function(graph){
 	graph.addInversion('husband', 'wife', function(){
@@ -17,8 +17,8 @@ graphdb.getGraph('testGraph', function(graph){
 
 Coffeescript:
 
-```coffeescript
-graphdb = require("./graph")
+    ```coffeescript
+    graphdb = require("./graph")
 graphdb.getGraph "testGraph", (graph) ->
   graph.addInversion "husband", "wife", ->
     graph.addNode {id: "Rebecca", husband: ["Jonathon"]}, ->

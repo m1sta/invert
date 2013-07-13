@@ -1,6 +1,7 @@
-A javascript + redis based graph library.
+##A javascript + redis based graph library.
 Built with IcedCoffeeScript and destined for redis-v8. 
-Very early days.
+
+Fast, supports indexes, inversions, and pure javascript queries. Multi-server sharing coming soon. Very early days.
 
 Javascript:
 

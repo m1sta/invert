@@ -18,7 +18,7 @@ graphdb.getGraph('testGraph', function(graph){
 Coffeescript:
 
     ```coffeescript
-        graphdb = require("./graph")
+graphdb = require("./graph")
 graphdb.getGraph "testGraph", (graph) ->
   graph.addInversion "husband", "wife", ->
     graph.addNode {id: "Rebecca", husband: ["Jonathon"]}, ->
@@ -29,4 +29,15 @@ graphdb.getGraph "testGraph", (graph) ->
 require 'redcarpet'
 markdown = Redcarpet.new("Hello World!")
 puts markdown.to_html
+```
+
+
+```javascript
+var graph = Viva.Graph.graph();
+graph.addNode(1);
+graph.addNode(2);
+graph.addLink(1, 2);
+
+var renderer = Viva.Graph.View.renderer(graph);
+renderer.run();
 ```

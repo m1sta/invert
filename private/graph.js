@@ -84,7 +84,7 @@
                 responseObject[splitKey] = [splitValue];
                 responseObject[splitKey].add = function(node) {
                   var _ref1, _ref2;
-                  if (node instanceof Function && (_ref1 = !node.id, __indexOf.call(this, _ref1) >= 0)) {
+                  if (node instanceof Object && (_ref1 = !node.id, __indexOf.call(this, _ref1) >= 0)) {
                     return this.push(node.id);
                   } else if (_ref2 = !node, __indexOf.call(this, _ref2) >= 0) {
                     return this.push(node);
@@ -92,7 +92,7 @@
                 };
                 responseObject[splitKey].remove = function(node) {
                   var index, item, _i, _j, _len, _len1, _results, _results1;
-                  if (node instanceof Function && node.id) {
+                  if (node instanceof Object && node.id) {
                     _results = [];
                     for (index = _i = 0, _len = this.length; _i < _len; index = ++_i) {
                       item = this[index];
@@ -289,30 +289,30 @@ _break()
                   referencedNodeId = value[_i];
                   redisObject[key + ":" + referencedNodeId] = edgeType.normal;
                 }
-                value.add = function(node) {
+                value.add = function(referenceNode) {
                   var _ref, _ref1;
-                  if (node instanceof Function && (_ref = !node.id, __indexOf.call(value, _ref) >= 0)) {
-                    return value.push(node.id);
-                  } else if (_ref1 = !node, __indexOf.call(value, _ref1) >= 0) {
-                    return value.push(node);
+                  if (referenceNode instanceof Object && (_ref = !referenceNode.id, __indexOf.call(value, _ref) >= 0)) {
+                    return value.push(referenceNode.id);
+                  } else if (_ref1 = !referenceNode, __indexOf.call(value, _ref1) >= 0) {
+                    return value.push(referenceNode);
                   }
                 };
-                value.remove = function(node) {
+                value.remove = function(referenceNode) {
                   var index, item, _j, _k, _len1, _len2, _results, _results1;
-                  if (node instanceof Function && node.id) {
+                  if (referenceNode instanceof Object && referenceNode.id) {
                     _results = [];
                     for (index = _j = 0, _len1 = value.length; _j < _len1; index = ++_j) {
                       item = value[index];
-                      if (item === node.id) {
+                      if (item === referenceNode.id) {
                         _results.push(value.pop(index));
                       }
                     }
                     return _results;
-                  } else if (node) {
+                  } else if (referenceNode) {
                     _results1 = [];
                     for (index = _k = 0, _len2 = value.length; _k < _len2; index = ++_k) {
                       item = value[index];
-                      if (item === node) {
+                      if (item === referenceNode) {
                         _results1.push(value.pop(index));
                       }
                     }

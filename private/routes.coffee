@@ -17,10 +17,11 @@ get['/test1'] = (request, response) ->
     await
         graph.addNode {id:1, name:"Jonathon", friends:[2,3,4], test:'failed'}, defer()
         graph.addNode {id:2, name:"Jeremy", friends:[4]}, defer()
-        graph.addNode {id:3, name:"Rebecca", friends:[4]}, defer()
-        graph.addNode {id:4, name:"Kate"}, defer()
+        graph.addNode {id:3, name:"Rebecca", friends:[4]}, defer(Rebecca)
+        graph.addNode {id:4, name:"Kate"}, defer(Kate)
     await
-        graph.deleteNode({id:1, test:null}, defer())
+        Rebecca.friends.add Kate
+        graph.deleteNode {id:1, test:null}, defer()
 
     traversal = (path, queue, data, firstVisit) ->
         if not data.recommended[path[0].name] then data.recommended[path[0].name] = 0

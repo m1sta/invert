@@ -31,7 +31,7 @@
   exports.post = post = {};
 
   get['/test1'] = function(request, response) {
-    var friendName, graph, jonathonNode, result, sharedData, sortKeys, startNodeIds, traversal, ___iced_passed_deferral, __iced_deferrals, __iced_k,
+    var Kate, Rebecca, friendName, graph, jonathonNode, result, sharedData, sortKeys, startNodeIds, traversal, ___iced_passed_deferral, __iced_deferrals, __iced_k,
       _this = this;
     __iced_k = __iced_k_noop;
     ___iced_passed_deferral = iced.findDeferral(arguments);
@@ -88,12 +88,22 @@
             name: "Rebecca",
             friends: [4]
           }, __iced_deferrals.defer({
+            assign_fn: (function() {
+              return function() {
+                return Rebecca = arguments[0];
+              };
+            })(),
             lineno: 19
           }));
           graph.addNode({
             id: 4,
             name: "Kate"
           }, __iced_deferrals.defer({
+            assign_fn: (function() {
+              return function() {
+                return Kate = arguments[0];
+              };
+            })(),
             lineno: 20
           }));
           __iced_deferrals._fulfill();
@@ -103,11 +113,12 @@
               parent: ___iced_passed_deferral,
               filename: "routes.coffee"
             });
+            Rebecca.friends.add(Kate);
             graph.deleteNode({
               id: 1,
               test: null
             }, __iced_deferrals.defer({
-              lineno: 22
+              lineno: 23
             }));
             __iced_deferrals._fulfill();
           })(function() {
@@ -135,7 +146,7 @@
                     return result = arguments[0];
                   };
                 })(),
-                lineno: 32
+                lineno: 33
               }));
               __iced_deferrals._fulfill();
             })(function() {
@@ -166,7 +177,7 @@
                       return jonathonNode = arguments[0];
                     };
                   })(),
-                  lineno: 40
+                  lineno: 41
                 }));
                 __iced_deferrals._fulfill();
               })(function() {
@@ -194,7 +205,7 @@
             return graph = arguments[0];
           };
         })(),
-        lineno: 44
+        lineno: 45
       }));
       __iced_deferrals._fulfill();
     })(function() {

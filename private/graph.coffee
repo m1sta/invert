@@ -34,10 +34,10 @@ graph = (graphName, graphCallback) =>
                 else
                     responseObject[splitKey] = [splitValue]
                     responseObject[splitKey].add = (node) ->
-                        if node instanceof Function and not node.id in this then this.push(node.id)
+                        if node instanceof Object and not node.id in this then this.push(node.id)
                         else if not node in this then this.push(node)
                     responseObject[splitKey].remove = (node) ->
-                        if node instanceof Function and node.id then this.pop(index) for item,index in this when item == node.id
+                        if node instanceof Object and node.id then this.pop(index) for item,index in this when item == node.id
                         else if node then this.pop(index) for item,index in this when item == node
             else
                 responseObject[key] = value
@@ -100,12 +100,12 @@ graph = (graphName, graphCallback) =>
             if value instanceof Array
                 for referencedNodeId in value
                     redisObject[key + ":" + referencedNodeId] = edgeType.normal
-                value.add = (node) ->
-                    if node instanceof Function and not node.id in value then value.push(node.id)
-                    else if not node in value then value.push(node)
-                value.remove = (node) ->
-                    if node instanceof Function and node.id then value.pop(index) for item,index in value when item == node.id
-                    else if node then value.pop(index) for item,index in value when item == node
+                value.add = (referenceNode) ->
+                    if referenceNode instanceof Object and not referenceNode.id in value then value.push(referenceNode.id)
+                    else if not referenceNode in value then value.push(referenceNode)
+                value.remove = (referenceNode) ->
+                    if referenceNode instanceof Object and referenceNode.id then value.pop(index) for item,index in value when item == referenceNode.id
+                    else if referenceNode then value.pop(index) for item,index in value when item == referenceNode
             else redisObject[key] = value
 
         await

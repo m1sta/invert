@@ -1,7 +1,7 @@
 ##A javascript + redis based graph library.
 Built with IcedCoffeeScript and destined for redis-v8. 
 
-Fast, supports indexes, inversions, and pure javascript queries. Multi-server sharding and Gremlin/Linq inspire fluid traversal syntax options coming soon. Very early days.
+Fast, supports indexes, inversions, and pure javascript queries. Multi-server sharding and Gremlin/Linq inspired fluid traversal syntax options coming soon. Very early days.
 
 Javascript:
 

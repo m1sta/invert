@@ -37,8 +37,8 @@ graph = (graphName, graphCallback) =>
                         if node instanceof Function and not node.id in this then this.push(node.id)
                         else if not node in this then this.push(node)
                     responseObject[splitKey].remove = (node) ->
-                        if node instanceof Function and node.id then x.pop(index) for item,index in this when item == node.id
-                        else if node then x.pop(index) for item,index in this when item == node
+                        if node instanceof Function and node.id then this.pop(index) for item,index in this when item == node.id
+                        else if node then this.pop(index) for item,index in this when item == node
             else
                 responseObject[key] = value
         responseObject
@@ -101,11 +101,11 @@ graph = (graphName, graphCallback) =>
                 for referencedNodeId in value
                     redisObject[key + ":" + referencedNodeId] = edgeType.normal
                 value.add = (node) ->
-                    if node instanceof Function and not node.id in this then this.push(node.id)
-                    else if not node in this then this.push(node)
+                    if node instanceof Function and not node.id in value then value.push(node.id)
+                    else if not node in value then value.push(node)
                 value.remove = (node) ->
-                    if node instanceof Function and node.id then x.pop(index) for item,index in this when item == node.id
-                    else if node then x.pop(index) for item,index in this when item == node
+                    if node instanceof Function and node.id then value.pop(index) for item,index in value when item == node.id
+                    else if node then value.pop(index) for item,index in value when item == node
             else redisObject[key] = value
 
         await

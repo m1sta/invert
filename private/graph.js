@@ -97,7 +97,7 @@
                     for (index = _i = 0, _len = this.length; _i < _len; index = ++_i) {
                       item = this[index];
                       if (item === node.id) {
-                        _results.push(x.pop(index));
+                        _results.push(this.pop(index));
                       }
                     }
                     return _results;
@@ -106,7 +106,7 @@
                     for (index = _j = 0, _len1 = this.length; _j < _len1; index = ++_j) {
                       item = this[index];
                       if (item === node) {
-                        _results1.push(x.pop(index));
+                        _results1.push(this.pop(index));
                       }
                     }
                     return _results1;
@@ -291,29 +291,29 @@ _break()
                 }
                 value.add = function(node) {
                   var _ref, _ref1;
-                  if (node instanceof Function && (_ref = !node.id, __indexOf.call(this, _ref) >= 0)) {
-                    return this.push(node.id);
-                  } else if (_ref1 = !node, __indexOf.call(this, _ref1) >= 0) {
-                    return this.push(node);
+                  if (node instanceof Function && (_ref = !node.id, __indexOf.call(value, _ref) >= 0)) {
+                    return value.push(node.id);
+                  } else if (_ref1 = !node, __indexOf.call(value, _ref1) >= 0) {
+                    return value.push(node);
                   }
                 };
                 value.remove = function(node) {
                   var index, item, _j, _k, _len1, _len2, _results, _results1;
                   if (node instanceof Function && node.id) {
                     _results = [];
-                    for (index = _j = 0, _len1 = this.length; _j < _len1; index = ++_j) {
-                      item = this[index];
+                    for (index = _j = 0, _len1 = value.length; _j < _len1; index = ++_j) {
+                      item = value[index];
                       if (item === node.id) {
-                        _results.push(x.pop(index));
+                        _results.push(value.pop(index));
                       }
                     }
                     return _results;
                   } else if (node) {
                     _results1 = [];
-                    for (index = _k = 0, _len2 = this.length; _k < _len2; index = ++_k) {
-                      item = this[index];
+                    for (index = _k = 0, _len2 = value.length; _k < _len2; index = ++_k) {
+                      item = value[index];
                       if (item === node) {
-                        _results1.push(x.pop(index));
+                        _results1.push(value.pop(index));
                       }
                     }
                     return _results1;

@@ -100,6 +100,12 @@ graph = (graphName, graphCallback) =>
             if value instanceof Array
                 for referencedNodeId in value
                     redisObject[key + ":" + referencedNodeId] = edgeType.normal
+                value.add = (node) ->
+                    if node instanceof Function and not node.id in this then this.push(node.id)
+                    else if not node in this then this.push(node)
+                value.remove = (node) ->
+                    if node instanceof Function and node.id then x.pop(index) for item,index in this when item == node.id
+                    else if node then x.pop(index) for item,index in this when item == node
             else redisObject[key] = value
 
         await

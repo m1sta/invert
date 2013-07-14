@@ -289,6 +289,36 @@ _break()
                   referencedNodeId = value[_i];
                   redisObject[key + ":" + referencedNodeId] = edgeType.normal;
                 }
+                value.add = function(node) {
+                  var _ref, _ref1;
+                  if (node instanceof Function && (_ref = !node.id, __indexOf.call(this, _ref) >= 0)) {
+                    return this.push(node.id);
+                  } else if (_ref1 = !node, __indexOf.call(this, _ref1) >= 0) {
+                    return this.push(node);
+                  }
+                };
+                value.remove = function(node) {
+                  var index, item, _j, _k, _len1, _len2, _results, _results1;
+                  if (node instanceof Function && node.id) {
+                    _results = [];
+                    for (index = _j = 0, _len1 = this.length; _j < _len1; index = ++_j) {
+                      item = this[index];
+                      if (item === node.id) {
+                        _results.push(x.pop(index));
+                      }
+                    }
+                    return _results;
+                  } else if (node) {
+                    _results1 = [];
+                    for (index = _k = 0, _len2 = this.length; _k < _len2; index = ++_k) {
+                      item = this[index];
+                      if (item === node) {
+                        _results1.push(x.pop(index));
+                      }
+                    }
+                    return _results1;
+                  }
+                };
               } else {
                 redisObject[key] = value;
               }
@@ -301,13 +331,13 @@ _break()
                 funcname: "addNode"
               });
               redisClient.hmset(nodePrefix + node.id, redisObject, __iced_deferrals.defer({
-                lineno: 105
+                lineno: 111
               }));
               for (key in node) {
                 value = node[key];
                 if (__indexOf.call(indexListCache, key) >= 0) {
                   redisClient.sadd(indexPrefix + key + ":" + value, node.id, __iced_deferrals.defer({
-                    lineno: 107
+                    lineno: 113
                   }));
                 }
               }
@@ -321,7 +351,7 @@ _break()
                     };
                     referencedNodeObject[inversionListCache[key] + ":" + node.id] = edgeType.inversion;
                     redisClient.hmset(nodePrefix + referencedNodeId, referencedNodeObject, __iced_deferrals.defer({
-                      lineno: 112
+                      lineno: 118
                     }));
                   }
                 }
@@ -365,21 +395,21 @@ _break()
                       for (_i = 0, _len = value.length; _i < _len; _i++) {
                         referencedNodeId = value[_i];
                         redisClient.hdel(nodePrefix + node.id, key + ":" + referencedNodeId, __iced_deferrals.defer({
-                          lineno: 136
+                          lineno: 142
                         }));
                         if (key in inversionListCache) {
                           redisClient.hdel(nodePrefix + referencedNodeId, inversionListCache[key] + ":" + node.id, __iced_deferrals.defer({
-                            lineno: 137
+                            lineno: 143
                           }));
                         }
                       }
                     } else {
                       if (key !== 'id') {
                         redisClient.hdel(nodePrefix + node.id, key, __iced_deferrals.defer({
-                          lineno: 141
+                          lineno: 147
                         }));
                         redisClient.srem(indexPrefix + key + ":" + value, node.id, __iced_deferrals.defer({
-                          lineno: 142
+                          lineno: 148
                         }));
                       }
                     }
@@ -418,7 +448,7 @@ _break()
                     return result = arguments[1];
                   };
                 })(),
-                lineno: 152
+                lineno: 158
               }));
               __iced_deferrals._fulfill();
             })(function() {
@@ -472,7 +502,7 @@ _break()
                             return result = arguments[1];
                           };
                         })(),
-                        lineno: 162
+                        lineno: 168
                       }));
                       __iced_deferrals._fulfill();
                     })(function() {
@@ -509,10 +539,10 @@ _break()
               funcname: "addInversion"
             });
             redisClient.hset(inversionListKey, from, to, __iced_deferrals.defer({
-              lineno: 174
+              lineno: 180
             }));
             redisClient.hset(inversionListKey, to, from, __iced_deferrals.defer({
-              lineno: 175
+              lineno: 181
             }));
             inversionListCache[from] = to;
             inversionListCache[to] = from;

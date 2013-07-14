@@ -82,6 +82,36 @@
                 responseObject[splitKey].push(splitValue);
               } else {
                 responseObject[splitKey] = [splitValue];
+                responseObject[splitKey].add = function(node) {
+                  var _ref1, _ref2;
+                  if (node instanceof Function && (_ref1 = !node.id, __indexOf.call(this, _ref1) >= 0)) {
+                    return this.push(node.id);
+                  } else if (_ref2 = !node, __indexOf.call(this, _ref2) >= 0) {
+                    return this.push(node);
+                  }
+                };
+                responseObject[splitKey].remove = function(node) {
+                  var index, item, _i, _j, _len, _len1, _results, _results1;
+                  if (node instanceof Function && node.id) {
+                    _results = [];
+                    for (index = _i = 0, _len = this.length; _i < _len; index = ++_i) {
+                      item = this[index];
+                      if (item === node.id) {
+                        _results.push(x.pop(index));
+                      }
+                    }
+                    return _results;
+                  } else if (node) {
+                    _results1 = [];
+                    for (index = _j = 0, _len1 = this.length; _j < _len1; index = ++_j) {
+                      item = this[index];
+                      if (item === node) {
+                        _results1.push(x.pop(index));
+                      }
+                    }
+                    return _results1;
+                  }
+                };
               }
             } else {
               responseObject[key] = value;
@@ -208,7 +238,7 @@
                             return nextNodeId = arguments[1];
                           };
                         })(),
-                        lineno: 85
+                        lineno: 92
                       }));
                       __iced_deferrals._fulfill();
                     })(function() {
@@ -225,7 +255,7 @@
                               return proposedNodeIdInUse = arguments[1];
                             };
                           })(),
-                          lineno: 86
+                          lineno: 93
                         }));
                         __iced_deferrals._fulfill();
                       })(function() {
@@ -271,13 +301,13 @@ _break()
                 funcname: "addNode"
               });
               redisClient.hmset(nodePrefix + node.id, redisObject, __iced_deferrals.defer({
-                lineno: 98
+                lineno: 105
               }));
               for (key in node) {
                 value = node[key];
                 if (__indexOf.call(indexListCache, key) >= 0) {
                   redisClient.sadd(indexPrefix + key + ":" + value, node.id, __iced_deferrals.defer({
-                    lineno: 100
+                    lineno: 107
                   }));
                 }
               }
@@ -291,7 +321,7 @@ _break()
                     };
                     referencedNodeObject[inversionListCache[key] + ":" + node.id] = edgeType.inversion;
                     redisClient.hmset(nodePrefix + referencedNodeId, referencedNodeObject, __iced_deferrals.defer({
-                      lineno: 105
+                      lineno: 112
                     }));
                   }
                 }
@@ -335,21 +365,21 @@ _break()
                       for (_i = 0, _len = value.length; _i < _len; _i++) {
                         referencedNodeId = value[_i];
                         redisClient.hdel(nodePrefix + node.id, key + ":" + referencedNodeId, __iced_deferrals.defer({
-                          lineno: 129
+                          lineno: 136
                         }));
                         if (key in inversionListCache) {
                           redisClient.hdel(nodePrefix + referencedNodeId, inversionListCache[key] + ":" + node.id, __iced_deferrals.defer({
-                            lineno: 130
+                            lineno: 137
                           }));
                         }
                       }
                     } else {
                       if (key !== 'id') {
                         redisClient.hdel(nodePrefix + node.id, key, __iced_deferrals.defer({
-                          lineno: 134
+                          lineno: 141
                         }));
                         redisClient.srem(indexPrefix + key + ":" + value, node.id, __iced_deferrals.defer({
-                          lineno: 135
+                          lineno: 142
                         }));
                       }
                     }
@@ -388,7 +418,7 @@ _break()
                     return result = arguments[1];
                   };
                 })(),
-                lineno: 145
+                lineno: 152
               }));
               __iced_deferrals._fulfill();
             })(function() {
@@ -442,7 +472,7 @@ _break()
                             return result = arguments[1];
                           };
                         })(),
-                        lineno: 155
+                        lineno: 162
                       }));
                       __iced_deferrals._fulfill();
                     })(function() {
@@ -479,10 +509,10 @@ _break()
               funcname: "addInversion"
             });
             redisClient.hset(inversionListKey, from, to, __iced_deferrals.defer({
-              lineno: 167
+              lineno: 174
             }));
             redisClient.hset(inversionListKey, to, from, __iced_deferrals.defer({
-              lineno: 168
+              lineno: 175
             }));
             inversionListCache[from] = to;
             inversionListCache[to] = from;

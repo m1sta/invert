@@ -31,7 +31,14 @@ graph = (graphName, graphCallback) =>
             if key.indexOf(":") > -1
                 [splitKey, splitValue] = key.split(":", 2)
                 if responseObject[splitKey] then responseObject[splitKey].push(splitValue)
-                else responseObject[splitKey] = [splitValue]
+                else
+                    responseObject[splitKey] = [splitValue]
+                    responseObject[splitKey].add = (node) ->
+                        if node instanceof Function and not node.id in this then this.push(node.id)
+                        else if not node in this then this.push(node)
+                    responseObject[splitKey].remove = (node) ->
+                        if node instanceof Function and node.id then x.pop(index) for item,index in this when item == node.id
+                        else if node then x.pop(index) for item,index in this when item == node
             else
                 responseObject[key] = value
         responseObject
@@ -139,7 +146,7 @@ graph = (graphName, graphCallback) =>
 
     this.getNode = () ->
 
-        #handle getNode(nodeId)
+         #handle getNode(nodeId)
         if not arguments[1]
             [nodeId, callback] = arguments
             if not callback then callback = console.dir

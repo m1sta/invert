@@ -12,8 +12,14 @@
         </script>
     </head>
     <body>
-        Loaded.
+        Create graph from csv...
         <form action="csv" method="post" enctype="multipart/form-data">
-        <input type="file" name="csv" /> <input type="submit" /></form>
+            <input type="file" name="csv" /> <input type="submit" />
+        </form>
+        <p/>
+        Run remote script...
+        <form action="runScript" method="post" enctype="multipart/form-data">
+            <textarea type="text" name="text" /> <input type="submit" />
+        </form>
     </body>
 </html>

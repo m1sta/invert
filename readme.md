@@ -46,4 +46,4 @@ Keep in mind:
  
  2. Apply traversals against the graph by defining actions with the signature: (path, queue,sharedData, firstVisit). You'll find the current node at path[0]. 
  
- 3. See [https://github.com/m1sta/tinkerlinks/blob/master/private/routes.coffee](routes.coffee) for an example.
+ 3. See [routes.coffee](https://github.com/m1sta/tinkerlinks/blob/master/private/routes.coffee) for an example.

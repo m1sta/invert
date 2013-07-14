@@ -3,6 +3,7 @@ redis = require("redis")
 
 module.exports.getGraph = (graphName, callback) -> new graph graphName, callback
 
+#use of fat arrow to allow easy use of library within the iced repl (g = require('graph'); g.getGraph('test')). Can't currently get defer(varName) working in repl so this is necessary.
 graph = (graphName, graphCallback) =>
 
     #todo: add sharding support
@@ -39,6 +40,8 @@ graph = (graphName, graphCallback) =>
         #todo: restructure to not use the callstack as it causes a graph depth traversal limit
         #todo: make multiple redis calls in parallel up to a prescribed maximum
         #todo: add sharding support
+        #todo: add node caching either here so that each traversal always sees the same node (preferred), alternatively add it to getNode()
+        #todo: make path tracking optional
         selectedNode = nodeQueue.remove()
         if selectedNode
             #console.log("traversing node " + selectedNode.nodeId + " with score " + selectedNode.score + " after having followed " + JSON.stringify(selectedNode.path))
@@ -169,12 +172,15 @@ graph = (graphName, graphCallback) =>
         callback true
 
     this.removeIndex = (propertyName) ->
+        #todo:implement removeIndex. It's just a simple set of redis delete statements
         throw "Not implemented"
 
     this.removeInversion = (from, to) ->
+        #todo: implement removeInversion. Need to make that inverted references are removed by comparing the value of the edge to the edgeType enum
         throw "Not implemented"
 
     this.rebuild = (jsonNodes) ->
+        #todo: implement rebuild. Low priority.
         #useful if indexes and inversions added after data
         #if jsonNodes then deletes everything in the database and replaces it with something from a json string
         throw "Not implemented"
@@ -197,7 +203,39 @@ graph = (graphName, graphCallback) =>
                         if formattedResult.length == results.length then callback formattedResult
 
     this.createTraversal = () ->
-        #helper to allow definition of a traversal function using Gremlin-like syntax ie. g.v('name', 'Jonathon').friends.friends
-        throw "Not implemented"
+        ###
+        todo: implement fluid query execution engine
+        Helper to allow definition of traversal functions using fluid syntax inspired by Gremlin and Linq ie. g.v('name', 'Jonathon').friends.friends.as('result').
+        Due to the async nature of database calls and the lack of object proxies until es.next need to make sure everything is a function
+        ie. g.v('name','Jonathon').get('friends').get('friends').filter((i)->i.country == 'Australia').as(defer result)
+        ###
+        addTraversalFunctions = (obj) ->
+            obj._steps = obj._steps || []
+            obj.v = ()->
+                obj._steps.push('v', arguments)
+                return obj
+            obj.e = ()->
+                obj._steps.push('e', arguments)
+                return obj
+            obj.get = () ->
+                obj._steps.push('get', arguments)
+                return obj
+            obj.loop = ()->
+                obj._steps.push('loop', arguments)
+                return obj
+            obj.group = () ->
+                obj._steps.push('group', arguments)
+                return obj
+            obj.filter = () ->
+                obj._steps.push('filter', arguments)
+                return obj
+            obj.as = () ->
+                #execute the query
+                if not arguments[0] instanceof Function
+                    obj._steps.push('as', arguments)
+                    return obj
+                else throw "Not implemented"
+            return obj
+        result = addTraversalFunctions {_graph:this}
 
     if graphCallback instanceof Function then graphCallback self

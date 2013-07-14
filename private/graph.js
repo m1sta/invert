@@ -44,7 +44,7 @@
             return inversionListCache = arguments[1];
           };
         })(),
-        lineno: 21
+        lineno: 22
       }));
       __iced_deferrals._fulfill();
     })(function() {
@@ -61,7 +61,7 @@
               return indexListCache = arguments[1];
             };
           })(),
-          lineno: 22
+          lineno: 23
         }));
         __iced_deferrals._fulfill();
       })(function() {
@@ -208,7 +208,7 @@
                             return nextNodeId = arguments[1];
                           };
                         })(),
-                        lineno: 82
+                        lineno: 85
                       }));
                       __iced_deferrals._fulfill();
                     })(function() {
@@ -225,7 +225,7 @@
                               return proposedNodeIdInUse = arguments[1];
                             };
                           })(),
-                          lineno: 83
+                          lineno: 86
                         }));
                         __iced_deferrals._fulfill();
                       })(function() {
@@ -271,13 +271,13 @@ _break()
                 funcname: "addNode"
               });
               redisClient.hmset(nodePrefix + node.id, redisObject, __iced_deferrals.defer({
-                lineno: 95
+                lineno: 98
               }));
               for (key in node) {
                 value = node[key];
                 if (__indexOf.call(indexListCache, key) >= 0) {
                   redisClient.sadd(indexPrefix + key + ":" + value, node.id, __iced_deferrals.defer({
-                    lineno: 97
+                    lineno: 100
                   }));
                 }
               }
@@ -291,7 +291,7 @@ _break()
                     };
                     referencedNodeObject[inversionListCache[key] + ":" + node.id] = edgeType.inversion;
                     redisClient.hmset(nodePrefix + referencedNodeId, referencedNodeObject, __iced_deferrals.defer({
-                      lineno: 102
+                      lineno: 105
                     }));
                   }
                 }
@@ -335,21 +335,21 @@ _break()
                       for (_i = 0, _len = value.length; _i < _len; _i++) {
                         referencedNodeId = value[_i];
                         redisClient.hdel(nodePrefix + node.id, key + ":" + referencedNodeId, __iced_deferrals.defer({
-                          lineno: 126
+                          lineno: 129
                         }));
                         if (key in inversionListCache) {
                           redisClient.hdel(nodePrefix + referencedNodeId, inversionListCache[key] + ":" + node.id, __iced_deferrals.defer({
-                            lineno: 127
+                            lineno: 130
                           }));
                         }
                       }
                     } else {
                       if (key !== 'id') {
                         redisClient.hdel(nodePrefix + node.id, key, __iced_deferrals.defer({
-                          lineno: 131
+                          lineno: 134
                         }));
                         redisClient.srem(indexPrefix + key + ":" + value, node.id, __iced_deferrals.defer({
-                          lineno: 132
+                          lineno: 135
                         }));
                       }
                     }
@@ -388,7 +388,7 @@ _break()
                     return result = arguments[1];
                   };
                 })(),
-                lineno: 142
+                lineno: 145
               }));
               __iced_deferrals._fulfill();
             })(function() {
@@ -442,7 +442,7 @@ _break()
                             return result = arguments[1];
                           };
                         })(),
-                        lineno: 152
+                        lineno: 155
                       }));
                       __iced_deferrals._fulfill();
                     })(function() {
@@ -479,10 +479,10 @@ _break()
               funcname: "addInversion"
             });
             redisClient.hset(inversionListKey, from, to, __iced_deferrals.defer({
-              lineno: 164
+              lineno: 167
             }));
             redisClient.hset(inversionListKey, to, from, __iced_deferrals.defer({
-              lineno: 165
+              lineno: 168
             }));
             inversionListCache[from] = to;
             inversionListCache[to] = from;
@@ -533,7 +533,53 @@ _break()
           });
         };
         _this.createTraversal = function() {
-          throw "Not implemented";
+          /*
+          todo: implement fluid query execution engine
+          Helper to allow definition of traversal functions using fluid syntax inspired by Gremlin and Linq ie. g.v('name', 'Jonathon').friends.friends.as('result').
+          Due to the async nature of database calls and the lack of object proxies until es.next need to make sure everything is a function
+          ie. g.v('name','Jonathon').get('friends').get('friends').filter((i)->i.country == 'Australia').as(defer result)
+          */
+
+          var addTraversalFunctions, result;
+          addTraversalFunctions = function(obj) {
+            obj._steps = obj._steps || [];
+            obj.v = function() {
+              obj._steps.push('v', arguments);
+              return obj;
+            };
+            obj.e = function() {
+              obj._steps.push('e', arguments);
+              return obj;
+            };
+            obj.get = function() {
+              obj._steps.push('get', arguments);
+              return obj;
+            };
+            obj.loop = function() {
+              obj._steps.push('loop', arguments);
+              return obj;
+            };
+            obj.group = function() {
+              obj._steps.push('group', arguments);
+              return obj;
+            };
+            obj.filter = function() {
+              obj._steps.push('filter', arguments);
+              return obj;
+            };
+            obj.as = function() {
+              if (!arguments[0] instanceof Function) {
+                obj._steps.push('as', arguments);
+                return obj;
+              } else {
+                throw "Not implemented";
+              }
+            };
+            return obj;
+          };
+          return result = addTraversalFunctions({
+            _graph: this
+          });
         };
         if (graphCallback instanceof Function) {
           return graphCallback(self);

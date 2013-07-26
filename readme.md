@@ -29,7 +29,6 @@ graphdb.getGraph "testGraph", (graph) ->
   graph.addInversion "husband", "wife", ->
     graph.addNode {id: "Rebecca", husband: ["Jonathon"]}, ->
       graph.getAllNodes true, console.dir
-      graph.v("Jonathon").get("wife").as(defer Rebecca)
 ```
 
 IcedCoffeeScript:
@@ -39,7 +38,12 @@ graphdb = require("./graph")
 await graphdb.getGraph "testGraph", defer(graph)
 await graph.addInversion "husband", "wife", defer()
 await graph.addNode {id: "Rebecca", husband: ["Jonathon"]}, defer()
-graph.getAllNodes true, console.dir
+await 
+	graph.getAllNodes true, defer allNodes
+	graph.v("Jonathon").get("wife").as(defer Rebecca)
+	
+console.dir allNodes
+console.dir Rebecca
 ```
 
 Keep in mind:

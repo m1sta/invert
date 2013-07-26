@@ -1,7 +1,8 @@
 ##A javascript + redis based graph library.
 Built with IcedCoffeeScript and destined for redis-v8. 
 
-Fast, supports indexes, inversions, and pure javascript queries. Multi-server sharding and Gremlin/Linq inspired fluid traversal syntax options coming soon. Very early days.
+Fast, supports indexes, inversions, and pure javascript queries via traversal function or Gremlin/Linq inspired fluid synax.
+Automatic traversal-optimised multi-server sharding coming soon. Very early days.
 
 Javascript:
 
@@ -37,7 +38,12 @@ graphdb = require("./graph")
 await graphdb.getGraph "testGraph", defer(graph)
 await graph.addInversion "husband", "wife", defer()
 await graph.addNode {id: "Rebecca", husband: ["Jonathon"]}, defer()
-graph.getAllNodes true, console.dir
+await 
+	graph.getAllNodes true, defer allNodes
+	graph.v("Jonathon").get("wife").as(defer Rebecca)
+	
+console.dir allNodes
+console.dir Rebecca
 ```
 
 Keep in mind:

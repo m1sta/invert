@@ -15,12 +15,17 @@
     return new graph(graphName, callback);
   };
 
-  graph = function(graphName, graphCallback) {
-    var edgeType, err, graphPrefix, indexListCache, indexListKey, indexPrefix, inversionListCache, inversionListKey, nextNodeIdKey, nodePrefix, redisClient, redisObjectToNode, self, step, ___iced_passed_deferral, __iced_deferrals, __iced_k;
+  graph = function(graphName, graphCallback, redisClient) {
+    var edgeType, err, graphPrefix, indexListCache, indexListKey, indexPrefix, inversionListCache, inversionListKey, nextNodeIdKey, nodePrefix, redisObjectToNode, self, step, ___iced_passed_deferral, __iced_deferrals, __iced_k;
     __iced_k = __iced_k_noop;
     ___iced_passed_deferral = iced.findDeferral(arguments);
+    if (graphName instanceof Function) {
+      redisClient = graphCallback;
+      graphCallback = graphName;
+      graphName = "";
+    }
     self = _this;
-    redisClient = redis.createClient();
+    redisClient = redisClient || redis.createClient();
     graphPrefix = graphName ? graphName + ":" : "graph:";
     nodePrefix = graphPrefix + "node:";
     indexPrefix = graphPrefix + "index:";
@@ -44,7 +49,7 @@
             return inversionListCache = arguments[1];
           };
         })(),
-        lineno: 22
+        lineno: 28
       }));
       __iced_deferrals._fulfill();
     })(function() {
@@ -61,7 +66,7 @@
               return indexListCache = arguments[1];
             };
           })(),
-          lineno: 23
+          lineno: 29
         }));
         __iced_deferrals._fulfill();
       })(function() {
@@ -82,6 +87,16 @@
                 responseObject[splitKey].push(splitValue);
               } else {
                 responseObject[splitKey] = [splitValue];
+                Object.defineProperty(responseObject[splitKey], "add", {
+                  enumerable: false,
+                  configurable: true,
+                  writable: true
+                });
+                Object.defineProperty(responseObject[splitKey], "remove", {
+                  enumerable: false,
+                  configurable: true,
+                  writable: true
+                });
                 responseObject[splitKey].add = function(node) {
                   var _ref1, _ref2;
                   if (node instanceof Object && (_ref1 = !node.id, __indexOf.call(this, _ref1) >= 0)) {
@@ -145,6 +160,13 @@
             }
           }
         };
+        _this.getConfig = function() {
+          return {
+            indexes: indexListCache,
+            inversions: inversionListCache,
+            graphName: graphPrefix.slice(0, -1)
+          };
+        };
         _this.traverse = function(startNodes, data, action, callback) {
           var compareFunction, nodeQueue;
           compareFunction = function(a, b) {
@@ -200,9 +222,6 @@
             _this = this;
           __iced_k = __iced_k_noop;
           ___iced_passed_deferral1 = iced.findDeferral(arguments);
-          if (!callback) {
-            callback = console.dir;
-          }
           (function(__iced_k) {
             if (!node.id) {
               (function(__iced_k) {
@@ -238,7 +257,7 @@
                             return nextNodeId = arguments[1];
                           };
                         })(),
-                        lineno: 92
+                        lineno: 101
                       }));
                       __iced_deferrals._fulfill();
                     })(function() {
@@ -255,7 +274,7 @@
                               return proposedNodeIdInUse = arguments[1];
                             };
                           })(),
-                          lineno: 93
+                          lineno: 102
                         }));
                         __iced_deferrals._fulfill();
                       })(function() {
@@ -289,6 +308,16 @@ _break()
                   referencedNodeId = value[_i];
                   redisObject[key + ":" + referencedNodeId] = edgeType.normal;
                 }
+                Object.defineProperty(value, "add", {
+                  enumerable: false,
+                  configurable: true,
+                  writable: true
+                });
+                Object.defineProperty(value, "remove", {
+                  enumerable: false,
+                  configurable: true,
+                  writable: true
+                });
                 value.add = function(referenceNode) {
                   var _ref, _ref1;
                   if (referenceNode instanceof Object && (_ref = !referenceNode.id, __indexOf.call(value, _ref) >= 0)) {
@@ -319,7 +348,7 @@ _break()
                     return _results1;
                   }
                 };
-              } else {
+              } else if (!(value instanceof Function)) {
                 redisObject[key] = value;
               }
             }
@@ -331,13 +360,13 @@ _break()
                 funcname: "addNode"
               });
               redisClient.hmset(nodePrefix + node.id, redisObject, __iced_deferrals.defer({
-                lineno: 111
+                lineno: 122
               }));
               for (key in node) {
                 value = node[key];
                 if (__indexOf.call(indexListCache, key) >= 0) {
                   redisClient.sadd(indexPrefix + key + ":" + value, node.id, __iced_deferrals.defer({
-                    lineno: 113
+                    lineno: 124
                   }));
                 }
               }
@@ -351,18 +380,18 @@ _break()
                     };
                     referencedNodeObject[inversionListCache[key] + ":" + node.id] = edgeType.inversion;
                     redisClient.hmset(nodePrefix + referencedNodeId, referencedNodeObject, __iced_deferrals.defer({
-                      lineno: 118
+                      lineno: 129
                     }));
                   }
                 }
               }
               __iced_deferrals._fulfill();
             })(function() {
-              return callback(node);
+              return (callback || console.dir)(node);
             });
           });
         };
-        _this.deleteNode = function(node, callback) {
+        _this.removeNode = function(node, callback) {
           var key, referencedNodeId, value, ___iced_passed_deferral1, __iced_deferrals, __iced_k,
             _this = this;
           __iced_k = __iced_k_noop;
@@ -374,10 +403,10 @@ _break()
             node[callback] = null;
             callback = arguments[2];
           }
-          if (!callback instanceof Function) {
+          if (!(callback instanceof Function)) {
             callback = function() {};
           }
-          if (!node instanceof Object) {
+          if (!(node instanceof Object)) {
             return __iced_k(redisClient.del(nodePrefix + node, callback));
           } else {
             (function(__iced_k) {
@@ -387,7 +416,7 @@ _break()
                   __iced_deferrals = new iced.Deferrals(__iced_k, {
                     parent: ___iced_passed_deferral1,
                     filename: "graph.coffee",
-                    funcname: "deleteNode"
+                    funcname: "removeNode"
                   });
                   for (key in node) {
                     value = node[key];
@@ -395,21 +424,21 @@ _break()
                       for (_i = 0, _len = value.length; _i < _len; _i++) {
                         referencedNodeId = value[_i];
                         redisClient.hdel(nodePrefix + node.id, key + ":" + referencedNodeId, __iced_deferrals.defer({
-                          lineno: 142
+                          lineno: 155
                         }));
                         if (key in inversionListCache) {
                           redisClient.hdel(nodePrefix + referencedNodeId, inversionListCache[key] + ":" + node.id, __iced_deferrals.defer({
-                            lineno: 143
+                            lineno: 156
                           }));
                         }
                       }
                     } else {
                       if (key !== 'id') {
                         redisClient.hdel(nodePrefix + node.id, key, __iced_deferrals.defer({
-                          lineno: 147
+                          lineno: 160
                         }));
                         redisClient.srem(indexPrefix + key + ":" + value, node.id, __iced_deferrals.defer({
-                          lineno: 148
+                          lineno: 161
                         }));
                       }
                     }
@@ -448,7 +477,7 @@ _break()
                     return result = arguments[1];
                   };
                 })(),
-                lineno: 158
+                lineno: 171
               }));
               __iced_deferrals._fulfill();
             })(function() {
@@ -456,9 +485,6 @@ _break()
             });
           } else {
             key = _arguments[0], value = _arguments[1], callback = _arguments[2];
-            if (!callback) {
-              callback = console.dir;
-            }
             results = [];
             return __iced_k(redisClient.smembers(indexPrefix + key + ":" + value, function(err, memberList) {
               var err, result, ___iced_passed_deferral2, __iced_deferrals, __iced_k,
@@ -502,7 +528,7 @@ _break()
                             return result = arguments[1];
                           };
                         })(),
-                        lineno: 168
+                        lineno: 180
                       }));
                       __iced_deferrals._fulfill();
                     })(function() {
@@ -512,17 +538,14 @@ _break()
                 };
                 _while(__iced_k);
               })(function() {
-                return callback(results);
+                return (callback || console.dir)(results);
               });
             }));
           }
         };
         _this.addIndex = function(propertyName, callback) {
-          if (!callback) {
-            callback = console.dir;
-          }
           indexListCache.push(propertyName);
-          return redisClient.sadd(indexListKey, propertyName, callback);
+          return redisClient.sadd(indexListKey, propertyName, callback || console.dir);
         };
         _this.addInversion = function(from, to, callback) {
           var ___iced_passed_deferral1, __iced_deferrals, __iced_k,
@@ -539,10 +562,10 @@ _break()
               funcname: "addInversion"
             });
             redisClient.hset(inversionListKey, from, to, __iced_deferrals.defer({
-              lineno: 180
+              lineno: 191
             }));
             redisClient.hset(inversionListKey, to, from, __iced_deferrals.defer({
-              lineno: 181
+              lineno: 192
             }));
             inversionListCache[from] = to;
             inversionListCache[to] = from;
@@ -565,9 +588,6 @@ _break()
             callback = expand;
             expand = false;
           }
-          if (!callback) {
-            callback = console.dir;
-          }
           return redisClient.keys(nodePrefix + "*", function(err, results) {
             var formattedResult, index, redisNodeId, _i, _j, _len, _len1, _results;
             formattedResult = [];
@@ -576,7 +596,7 @@ _break()
                 redisNodeId = results[_i];
                 formattedResult.push(redisNodeId.split(":", 3)[2]);
               }
-              return callback(formattedResult);
+              return (callback || console.dir)(formattedResult);
             } else {
               _results = [];
               for (index = _j = 0, _len1 = results.length; _j < _len1; index = ++_j) {
@@ -584,7 +604,7 @@ _break()
                 _results.push(redisClient.hgetall(redisNodeId, function(err, result) {
                   formattedResult.push(redisObjectToNode(result));
                   if (formattedResult.length === results.length) {
-                    return callback(formattedResult);
+                    return (callback || console.dir)(formattedResult);
                   }
                 }));
               }
@@ -592,54 +612,726 @@ _break()
             }
           });
         };
-        _this.createTraversal = function() {
+        _this.v = function() {
           /*
           todo: implement fluid query execution engine
+          todo: add caching for getNode
           Helper to allow definition of traversal functions using fluid syntax inspired by Gremlin and Linq ie. g.v('name', 'Jonathon').friends.friends.as('result').
           Due to the async nature of database calls and the lack of object proxies until es.next need to make sure everything is a function
           ie. g.v('name','Jonathon').get('friends').get('friends').filter((i)->i.country == 'Australia').as(defer result)
           */
 
-          var addTraversalFunctions, result;
+          var addTraversalFunctions, executeNextStep, result;
+          executeNextStep = function(obj) {
+            var cb, cbResult, currentNode, currentStep, expandedItem, group, groupFunction, groupFunctionResult, groupList, groupListIndex, groups, index, indexName, isActive, item, key, loopAgain, mapFunction, mapFunctionResult, nodeId, nodeIdIndex, nodeIdList, nodeList, outputData, outputPath, predicate, shrink, shrunkOutputData, stepIndex, stepName, stepResults, testKey, traversalItem, traversalItemIndex, value, ___iced_passed_deferral1, __iced_deferrals, __iced_k,
+              _this = this;
+            __iced_k = __iced_k_noop;
+            ___iced_passed_deferral1 = iced.findDeferral(arguments);
+            obj._namedSteps = obj._namedSteps || {};
+            obj._stepIndex = obj._stepIndex + 1 || 0;
+            obj._lastResult = obj._lastResult || null;
+            obj._loops = obj._loops || {};
+            isActive = function(traversalItem) {
+              var loopId;
+              for (loopId in obj._loops) {
+                if (!traversalItem.loops[loopId]) {
+                  return false;
+                }
+              }
+              return true;
+            };
+            if (obj._stepIndex < obj._steps.length) {
+              currentStep = obj._steps[obj._stepIndex];
+              (function(__iced_k) {
+                var _i, _j, _len, _len1, _ref;
+                if (currentStep.c === 'as') {
+                  stepName = currentStep.a[0].constructor === String ? currentStep.a[0] : "result";
+                  if (currentStep.a[0] instanceof Function) {
+                    cb = currentStep.a[0];
+                  } else if (currentStep.a[1] instanceof Function) {
+                    cb = currentStep.a[1];
+                  }
+                  outputData = [];
+                  _ref = obj._lastResult;
+                  for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
+                    traversalItem = _ref[index];
+                    if (!isActive(traversalItem)) {
+                      stepResults.push(traversalItem);
+                    } else {
+                      traversalItem.data[stepName] = traversalItem.currentItem;
+                      if (cb) {
+                        outputData.push(traversalItem.data);
+                      } else {
+                        traversalItem.path.unshift(traversalItem.currentItem);
+                      }
+                    }
+                  }
+                  if (cb) {
+                    testKey = null;
+                    shrink = true;
+                    for (_j = 0, _len1 = outputData.length; _j < _len1; _j++) {
+                      item = outputData[_j];
+                      for (key in item) {
+                        value = item[key];
+                        if (!testKey) {
+                          testKey = key;
+                        } else if (testKey !== key) {
+                          shrink = false;
+                          break;
+                        }
+                      }
+                      if (!shrink) {
+                        break;
+                      }
+                    }
+                    if (shrink) {
+                      shrunkOutputData = (function() {
+                        var _k, _len2, _results;
+                        _results = [];
+                        for (_k = 0, _len2 = outputData.length; _k < _len2; _k++) {
+                          item = outputData[_k];
+                          _results.push(item[testKey]);
+                        }
+                        return _results;
+                      })();
+                      cb(shrunkOutputData);
+                    } else {
+                      cb(outputData);
+                    }
+                  } else {
+                    obj._namedSteps[stepName] = obj._stepIndex;
+                    executeNextStep(obj);
+                  }
+                  return __iced_k();
+                } else {
+                  (function(__iced_k) {
+                    if (currentStep.c === 'v') {
+                      if (currentStep.a.length > 1) {
+                        nodeIdList = currentStep.a[1];
+                        indexName = currentStep.a[0];
+                      } else {
+                        nodeIdList = currentStep.a[0];
+                        indexName = null;
+                      }
+                      if (!(nodeList instanceof Array)) {
+                        nodeList = [nodeList];
+                      }
+                      (function(__iced_k) {
+                        if (!nodeList[0]) {
+                          (function(__iced_k) {
+                            __iced_deferrals = new iced.Deferrals(__iced_k, {
+                              parent: ___iced_passed_deferral1,
+                              filename: "graph.coffee",
+                              funcname: "executeNextStep"
+                            });
+                            obj._graph.getAllNodes(true, __iced_deferrals.defer({
+                              assign_fn: (function() {
+                                return function() {
+                                  return stepResults = arguments[0];
+                                };
+                              })(),
+                              lineno: 296
+                            }));
+                            __iced_deferrals._fulfill();
+                          })(__iced_k);
+                        } else {
+                          stepResults = [];
+                          (function(__iced_k) {
+                            var _k, _len2;
+                            __iced_deferrals = new iced.Deferrals(__iced_k, {
+                              parent: ___iced_passed_deferral1,
+                              filename: "graph.coffee",
+                              funcname: "executeNextStep"
+                            });
+                            for (index = _k = 0, _len2 = nodeIdList.length; _k < _len2; index = ++_k) {
+                              nodeId = nodeIdList[index];
+                              if (indexName) {
+                                obj._graph.getNode(indexName, nodeId, __iced_deferrals.defer({
+                                  assign_fn: (function(__slot_1, __slot_2) {
+                                    return function() {
+                                      return __slot_1[__slot_2] = arguments[0];
+                                    };
+                                  })(stepResults, index),
+                                  lineno: 301
+                                }));
+                              } else {
+                                obj._graph.getNode(nodeId, __iced_deferrals.defer({
+                                  assign_fn: (function(__slot_1, __slot_2) {
+                                    return function() {
+                                      return __slot_1[__slot_2] = arguments[0];
+                                    };
+                                  })(stepResults, index),
+                                  lineno: 302
+                                }));
+                              }
+                            }
+                            __iced_deferrals._fulfill();
+                          })(__iced_k);
+                        }
+                      })(function() {
+                        obj._lastResult = (function() {
+                          var _k, _len2, _results;
+                          _results = [];
+                          for (_k = 0, _len2 = stepResults.length; _k < _len2; _k++) {
+                            item = stepResults[_k];
+                            _results.push({
+                              currentItem: item,
+                              path: [],
+                              loops: {},
+                              data: {}
+                            });
+                          }
+                          return _results;
+                        })();
+                        return __iced_k(executeNextStep(obj));
+                      });
+                    } else {
+                      (function(__iced_k) {
+                        if (currentStep.c === 'e') {
+                          throw 'Not implemented';
+                          return __iced_k();
+                        } else {
+                          (function(__iced_k) {
+                            if (currentStep.c === 'get') {
+                              stepResults = [];
+                              (function(__iced_k) {
+                                var _k, _len2, _ref1, _results, _while;
+                                _ref1 = obj._lastResult;
+                                _len2 = _ref1.length;
+                                traversalItemIndex = 0;
+                                _results = [];
+                                _while = function(__iced_k) {
+                                  var _break, _continue, _next;
+                                  _break = function() {
+                                    return __iced_k(_results);
+                                  };
+                                  _continue = function() {
+                                    return iced.trampoline(function() {
+                                      ++traversalItemIndex;
+                                      return _while(__iced_k);
+                                    });
+                                  };
+                                  _next = function(__iced_next_arg) {
+                                    _results.push(__iced_next_arg);
+                                    return _continue();
+                                  };
+                                  if (!(traversalItemIndex < _len2)) {
+                                    return _break();
+                                  } else {
+                                    traversalItem = _ref1[traversalItemIndex];
+                                    (function(__iced_k) {
+                                      if (!isActive(traversalItem)) {
+                                        return __iced_k(stepResults.push(traversalItem));
+                                      } else {
+                                        currentNode = traversalItem.currentItem;
+                                        (function(__iced_k) {
+                                          if (currentNode.constructor === Number) {
+                                            (function(__iced_k) {
+                                              __iced_deferrals = new iced.Deferrals(__iced_k, {
+                                                parent: ___iced_passed_deferral1,
+                                                filename: "graph.coffee",
+                                                funcname: "executeNextStep"
+                                              });
+                                              obj._graph.getNode(currentNode, __iced_deferrals.defer({
+                                                assign_fn: (function() {
+                                                  return function() {
+                                                    return currentNode = arguments[0];
+                                                  };
+                                                })(),
+                                                lineno: 319
+                                              }));
+                                              __iced_deferrals._fulfill();
+                                            })(__iced_k);
+                                          } else {
+                                            return __iced_k();
+                                          }
+                                        })(function() {
+                                          (function(__iced_k) {
+                                            if (currentNode[currentStep.a[0]] instanceof Array) {
+                                              (function(__iced_k) {
+                                                var _l, _len3, _ref2, _results1, _while;
+                                                _ref2 = currentNode[currentStep.a[0]];
+                                                _len3 = _ref2.length;
+                                                nodeIdIndex = 0;
+                                                _results1 = [];
+                                                _while = function(__iced_k) {
+                                                  var _break, _continue, _next;
+                                                  _break = function() {
+                                                    return __iced_k(_results1);
+                                                  };
+                                                  _continue = function() {
+                                                    return iced.trampoline(function() {
+                                                      ++nodeIdIndex;
+                                                      return _while(__iced_k);
+                                                    });
+                                                  };
+                                                  _next = function(__iced_next_arg) {
+                                                    _results1.push(__iced_next_arg);
+                                                    return _continue();
+                                                  };
+                                                  if (!(nodeIdIndex < _len3)) {
+                                                    return _break();
+                                                  } else {
+                                                    nodeId = _ref2[nodeIdIndex];
+                                                    (function(__iced_k) {
+                                                      __iced_deferrals = new iced.Deferrals(__iced_k, {
+                                                        parent: ___iced_passed_deferral1,
+                                                        filename: "graph.coffee",
+                                                        funcname: "executeNextStep"
+                                                      });
+                                                      obj._graph.getNode(nodeId, __iced_deferrals.defer({
+                                                        assign_fn: (function() {
+                                                          return function() {
+                                                            return expandedItem = arguments[0];
+                                                          };
+                                                        })(),
+                                                        lineno: 322
+                                                      }));
+                                                      __iced_deferrals._fulfill();
+                                                    })(function() {
+                                                      outputPath = traversalItem.path.slice();
+                                                      outputPath(currentNode);
+                                                      return _next(stepResults.push({
+                                                        currentItem: expandedItem,
+                                                        path: outputPath,
+                                                        loops: currentNode.loops
+                                                      }));
+                                                    });
+                                                  }
+                                                };
+                                                _while(__iced_k);
+                                              })(__iced_k);
+                                            } else {
+                                              outputPath = traversalItem.path.slice();
+                                              outputPath.unshift(traversalItem.currentItem);
+                                              return __iced_k(stepResults.push({
+                                                currentItem: currentNode[currentStep.a[0]],
+                                                path: outputPath,
+                                                loops: traversalItem.loops,
+                                                data: traversalItem.data
+                                              }));
+                                            }
+                                          })(__iced_k);
+                                        });
+                                      }
+                                    })(_next);
+                                  }
+                                };
+                                _while(__iced_k);
+                              })(function() {
+                                obj._lastResult = stepResults;
+                                return __iced_k(executeNextStep(obj));
+                              });
+                            } else {
+                              (function(__iced_k) {
+                                var _k, _len2, _ref1;
+                                if (currentStep.c === 'filter') {
+                                  stepResults = [];
+                                  _ref1 = obj._lastResult;
+                                  for (index = _k = 0, _len2 = _ref1.length; _k < _len2; index = ++_k) {
+                                    traversalItem = _ref1[index];
+                                    if (!isActive(traversalItem)) {
+                                      stepResults.push(traversalItem);
+                                    } else {
+                                      if (currentStep.a[0]({
+                                        item: traversalItem.currentItem,
+                                        path: traversalItem.path,
+                                        data: traversalItem.data,
+                                        loops: obj._loops[obj._stepIndex]
+                                      })) {
+                                        traversalItem.path.unshift(traversalItem.currentItem);
+                                        stepResults.push(traversalItem);
+                                      }
+                                    }
+                                  }
+                                  obj._lastResult = stepResults;
+                                  return __iced_k(executeNextStep(obj));
+                                } else {
+                                  (function(__iced_k) {
+                                    if (currentStep.c === 'map') {
+                                      stepResults = [];
+                                      (function(__iced_k) {
+                                        var _l, _len3, _ref2, _results, _while;
+                                        _ref2 = obj._lastResult;
+                                        _len3 = _ref2.length;
+                                        index = 0;
+                                        _results = [];
+                                        _while = function(__iced_k) {
+                                          var _break, _continue, _next;
+                                          _break = function() {
+                                            return __iced_k(_results);
+                                          };
+                                          _continue = function() {
+                                            return iced.trampoline(function() {
+                                              ++index;
+                                              return _while(__iced_k);
+                                            });
+                                          };
+                                          _next = function(__iced_next_arg) {
+                                            _results.push(__iced_next_arg);
+                                            return _continue();
+                                          };
+                                          if (!(index < _len3)) {
+                                            return _break();
+                                          } else {
+                                            traversalItem = _ref2[index];
+                                            (function(__iced_k) {
+                                              if (!isActive(traversalItem)) {
+                                                return __iced_k(stepResults.push(traversalItem));
+                                              } else {
+                                                traversalItem.path.unshift(traversalItem.currentItem);
+                                                (function(__iced_k) {
+                                                  if (currentStep.a[0].length === 1) {
+                                                    return __iced_k(traversalItem.currentItem = currentStep.a[0]({
+                                                      item: traversalItem.currentItem,
+                                                      path: traversalItem.path,
+                                                      data: traversalItem.data,
+                                                      loops: obj._loops[obj._stepIndex]
+                                                    }));
+                                                  } else {
+                                                    (function(__iced_k) {
+                                                      __iced_deferrals = new iced.Deferrals(__iced_k, {
+                                                        parent: ___iced_passed_deferral1,
+                                                        filename: "graph.coffee",
+                                                        funcname: "executeNextStep"
+                                                      });
+                                                      currentStep.a[0]({
+                                                        item: traversalItem.currentItem,
+                                                        path: traversalItem.path,
+                                                        data: traversalItem.data,
+                                                        loops: obj._loops[obj._stepIndex]
+                                                      }, __iced_deferrals.defer({
+                                                        assign_fn: (function() {
+                                                          return function() {
+                                                            return cbResult = arguments[0];
+                                                          };
+                                                        })(),
+                                                        lineno: 355
+                                                      }));
+                                                      __iced_deferrals._fulfill();
+                                                    })(function() {
+                                                      return __iced_k(traversalItem.currentItem = cbResult);
+                                                    });
+                                                  }
+                                                })(function() {
+                                                  return __iced_k(stepResults.push(traversalItem));
+                                                });
+                                              }
+                                            })(_next);
+                                          }
+                                        };
+                                        _while(__iced_k);
+                                      })(function() {
+                                        obj._lastResult = stepResults;
+                                        return __iced_k(executeNextStep(obj));
+                                      });
+                                    } else {
+                                      (function(__iced_k) {
+                                        var _l, _len3, _len4, _m, _ref2, _ref3;
+                                        if (currentStep.c === 'group') {
+                                          stepResults = [];
+                                          groups = {};
+                                          groupFunction = currentStep.a[0].constructor === String ? function(item) {
+                                            return item.data[currentStep.a[0]];
+                                          } : currentStep.a[0];
+                                          mapFunction = currentStep.a[1] ? currentStep.a[1] : null;
+                                          (function(__iced_k) {
+                                            var _l, _len3, _ref2, _results, _while;
+                                            _ref2 = obj._lastResult;
+                                            _len3 = _ref2.length;
+                                            index = 0;
+                                            _results = [];
+                                            _while = function(__iced_k) {
+                                              var _break, _continue, _next;
+                                              _break = function() {
+                                                return __iced_k(_results);
+                                              };
+                                              _continue = function() {
+                                                return iced.trampoline(function() {
+                                                  ++index;
+                                                  return _while(__iced_k);
+                                                });
+                                              };
+                                              _next = function(__iced_next_arg) {
+                                                _results.push(__iced_next_arg);
+                                                return _continue();
+                                              };
+                                              if (!(index < _len3)) {
+                                                return _break();
+                                              } else {
+                                                traversalItem = _ref2[index];
+                                                (function(__iced_k) {
+                                                  if (!isActive(traversalItem)) {
+                                                    return __iced_k(stepResults.push(traversalItem));
+                                                  } else {
+                                                    (function(__iced_k) {
+                                                      if (groupFunction.length === 1) {
+                                                        return __iced_k(group = groupFunction({
+                                                          item: traversalItem.currentItem,
+                                                          path: traversalItem.path,
+                                                          data: traversalItem.data,
+                                                          loops: obj._loops[obj._stepIndex]
+                                                        }));
+                                                      } else {
+                                                        (function(__iced_k) {
+                                                          __iced_deferrals = new iced.Deferrals(__iced_k, {
+                                                            parent: ___iced_passed_deferral1,
+                                                            filename: "graph.coffee",
+                                                            funcname: "executeNextStep"
+                                                          });
+                                                          groupFunction({
+                                                            item: traversalItem.currentItem,
+                                                            path: traversalItem.path,
+                                                            data: traversalItem.data,
+                                                            loops: obj._loops[obj._stepIndex]
+                                                          }, __iced_deferrals.defer({
+                                                            assign_fn: (function() {
+                                                              return function() {
+                                                                return groupFunctionResult = arguments[0];
+                                                              };
+                                                            })(),
+                                                            lineno: 375
+                                                          }));
+                                                          __iced_deferrals._fulfill();
+                                                        })(function() {
+                                                          return __iced_k(group = groupFunctionResult);
+                                                        });
+                                                      }
+                                                    })(function() {
+                                                      if (!groups[group]) {
+                                                        groups[group] = [];
+                                                      }
+                                                      return __iced_k(group ? groups[group].push(traversalItem) : void 0);
+                                                    });
+                                                  }
+                                                })(_next);
+                                              }
+                                            };
+                                            _while(__iced_k);
+                                          })(function() {
+                                            (function(__iced_k) {
+                                              var _keys, _l, _m, _ref2, _results, _while;
+                                              _ref2 = groups;
+                                              _keys = (function() {
+                                                var _results1;
+                                                _results1 = [];
+                                                for (_l in _ref2) {
+                                                  _results1.push(_l);
+                                                }
+                                                return _results1;
+                                              })();
+                                              _m = 0;
+                                              _results = [];
+                                              _while = function(__iced_k) {
+                                                var _break, _continue, _next;
+                                                _break = function() {
+                                                  return __iced_k(_results);
+                                                };
+                                                _continue = function() {
+                                                  return iced.trampoline(function() {
+                                                    ++_m;
+                                                    return _while(__iced_k);
+                                                  });
+                                                };
+                                                _next = function(__iced_next_arg) {
+                                                  _results.push(__iced_next_arg);
+                                                  return _continue();
+                                                };
+                                                if (!(_m < _keys.length)) {
+                                                  return _break();
+                                                } else {
+                                                  groupList = _keys[_m];
+                                                  groupListIndex = _ref2[groupList];
+                                                  (function(__iced_k) {
+                                                    if (mapFunction) {
+                                                      (function(__iced_k) {
+                                                        if (mapFunction.length === 1) {
+                                                          return __iced_k(stepResults.push(mapFunction(groupList)));
+                                                        } else {
+                                                          (function(__iced_k) {
+                                                            __iced_deferrals = new iced.Deferrals(__iced_k, {
+                                                              parent: ___iced_passed_deferral1,
+                                                              filename: "graph.coffee",
+                                                              funcname: "executeNextStep"
+                                                            });
+                                                            mapFunction(groupList, __iced_deferrals.defer({
+                                                              assign_fn: (function() {
+                                                                return function() {
+                                                                  return mapFunctionResult = arguments[0];
+                                                                };
+                                                              })(),
+                                                              lineno: 384
+                                                            }));
+                                                            __iced_deferrals._fulfill();
+                                                          })(function() {
+                                                            return __iced_k(stepResults.push(mapFunctionResult));
+                                                          });
+                                                        }
+                                                      })(__iced_k);
+                                                    } else {
+                                                      return __iced_k(stepResults.push(groupList));
+                                                    }
+                                                  })(_next);
+                                                }
+                                              };
+                                              _while(__iced_k);
+                                            })(function() {
+                                              obj._lastResult = stepResults;
+                                              return __iced_k(executeNextStep(obj));
+                                            });
+                                          });
+                                        } else {
+                                          if (currentStep.c === 'back') {
+                                            stepResults = [];
+                                            _ref2 = obj._lastResult;
+                                            for (index = _l = 0, _len3 = _ref2.length; _l < _len3; index = ++_l) {
+                                              traversalItem = _ref2[index];
+                                              if (isActive(traversalItem)) {
+                                                traversalItem.path.unshift(traversalItem.currentItem);
+                                                traversalItem.currentItem = currentStep.a[0].constructor === String ? traversalItem.data[currentStep.a[0]] : traversalItem.path[stepCount];
+                                              }
+                                              stepResults.push(traversalItem);
+                                            }
+                                            obj._lastResult = stepResults;
+                                            executeNextStep(obj);
+                                          } else if (currentStep.c === 'loop') {
+                                            stepIndex = currentStep.a[0].constructor === String ? obj._namedSteps[currentStep.a[0]] : obj._stepIndex - currentStep.a[0];
+                                            predicate = currentStep.a[1] instanceof Function ? currentStep.a[1] : function(i) {
+                                              return obj._loops[stepIndex] <= currentStep.a[1];
+                                            };
+                                            obj._loops[stepIndex] = obj._loops[stepIndex] ? obj._loops[stepIndex] + 1 : 1;
+                                            loopAgain = false;
+                                            stepResults = [];
+                                            _ref3 = obj._lastResult;
+                                            for (index = _m = 0, _len4 = _ref3.length; _m < _len4; index = ++_m) {
+                                              traversalItem = _ref3[index];
+                                              if (isActive(traversalItem)) {
+                                                traversalItem.path.unshift(traversalItem.currentItem);
+                                                if (predicate({
+                                                  item: traversalItem.currentItem,
+                                                  path: traversalItem.path,
+                                                  data: traversalItem.data,
+                                                  loops: obj._loops[obj._stepIndex]
+                                                })) {
+                                                  traversalItem.loops[stepIndex] = true;
+                                                  loopAgain = true;
+                                                } else {
+                                                  traversalItem.loops[stepIndex] = false;
+                                                }
+                                              }
+                                              stepResults.push(traversalItem);
+                                            }
+                                            if (loopAgain) {
+                                              obj._stepIndex = stepIndex - 1;
+                                            } else {
+                                              delete obj._loops[stepIndex];
+                                            }
+                                            obj._lastResult = stepResults;
+                                            executeNextStep(obj);
+                                          } else {
+                                            console.log('query command skipped: ' + JSON.stringify(currentStep));
+                                            executeNextStep(obj);
+                                          }
+                                          return __iced_k();
+                                        }
+                                      })(__iced_k);
+                                    }
+                                  })(__iced_k);
+                                }
+                              })(__iced_k);
+                            }
+                          })(__iced_k);
+                        }
+                      })(__iced_k);
+                    }
+                  })(__iced_k);
+                }
+              })(__iced_k);
+            } else {
+              return __iced_k();
+            }
+          };
           addTraversalFunctions = function(obj) {
             obj._steps = obj._steps || [];
-            obj.v = function() {
-              obj._steps.push('v', arguments);
+            obj.v = obj.query = function() {
+              obj._steps.push({
+                c: 'v',
+                a: arguments
+              });
               return obj;
             };
             obj.e = function() {
-              obj._steps.push('e', arguments);
+              obj._steps.push({
+                c: 'e',
+                a: arguments
+              });
               return obj;
             };
             obj.get = function() {
-              obj._steps.push('get', arguments);
+              obj._steps.push({
+                c: 'get',
+                a: arguments
+              });
               return obj;
             };
             obj.loop = function() {
-              obj._steps.push('loop', arguments);
+              obj._steps.push({
+                c: 'loop',
+                a: arguments
+              });
               return obj;
             };
-            obj.group = function() {
-              obj._steps.push('group', arguments);
+            obj.group = obj.reduce = function() {
+              obj._steps.push({
+                c: 'group',
+                a: arguments
+              });
               return obj;
             };
             obj.filter = function() {
-              obj._steps.push('filter', arguments);
+              obj._steps.push({
+                c: 'filter',
+                a: arguments
+              });
               return obj;
             };
-            obj.as = function() {
-              if (!arguments[0] instanceof Function) {
-                obj._steps.push('as', arguments);
-                return obj;
+            obj.map = obj.transform = function() {
+              obj._steps.push({
+                c: 'map',
+                a: arguments
+              });
+              return obj;
+            };
+            obj.back = obj["with"] = function() {
+              obj._steps.push({
+                c: 'back',
+                a: arguments
+              });
+              return obj;
+            };
+            obj.as = obj.out = obj.show = function() {
+              if (arguments.length === 0) {
+                obj._steps.push({
+                  c: 'as',
+                  a: [console.dir]
+                });
+                return executeNextStep(obj);
+              } else if (arguments[0] instanceof Function || arguments[1] instanceof Function) {
+                obj._steps.push({
+                  c: 'as',
+                  a: arguments
+                });
+                return executeNextStep(obj);
               } else {
-                throw "Not implemented";
+                return obj;
               }
             };
             return obj;
           };
-          return result = addTraversalFunctions({
+          result = addTraversalFunctions({
             _graph: this
           });
+          return result.query(arguments);
         };
         if (graphCallback instanceof Function) {
           return graphCallback(self);

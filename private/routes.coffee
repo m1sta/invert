@@ -24,8 +24,7 @@ get['/test1'] = (request, response) ->
         graph.deleteNode {id:1, test:null}, defer()
 
     traversal = (path, queue, data, firstVisit) ->
-        if not data.recommended[path[0].name] then data.recommended[path[0].name] = 0
-        data.recommended[path[0].name] += 1 / path.length
+        data.recommended[path[0].name] = data.recommended[path[0].name] + (1 / path.length) or (1 / path.length)
         if path.length < 4 and firstVisit then queue.add(-1 * path.length, path, path[0].friends)
 
     startNodeIds = [1]

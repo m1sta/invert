@@ -123,10 +123,7 @@
             __iced_deferrals._fulfill();
           })(function() {
             traversal = function(path, queue, data, firstVisit) {
-              if (!data.recommended[path[0].name]) {
-                data.recommended[path[0].name] = 0;
-              }
-              data.recommended[path[0].name] += 1 / path.length;
+              data.recommended[path[0].name] = data.recommended[path[0].name] + (1 / path.length) || (1 / path.length);
               if (path.length < 4 && firstVisit) {
                 return queue.add(-1 * path.length, path, path[0].friends);
               }
@@ -146,7 +143,7 @@
                     return result = arguments[0];
                   };
                 })(),
-                lineno: 33
+                lineno: 32
               }));
               __iced_deferrals._fulfill();
             })(function() {
@@ -177,7 +174,7 @@
                       return jonathonNode = arguments[0];
                     };
                   })(),
-                  lineno: 41
+                  lineno: 40
                 }));
                 __iced_deferrals._fulfill();
               })(function() {
@@ -205,7 +202,7 @@
             return graph = arguments[0];
           };
         })(),
-        lineno: 45
+        lineno: 44
       }));
       __iced_deferrals._fulfill();
     })(function() {

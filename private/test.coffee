@@ -1,6 +1,7 @@
 #require('source-map-support').install {retrieveSourceMap: (source) -> {url: source.slice(0,-2) + "coffee", map: fs.readFileSync(source.slice(0,-2) + "map", 'utf8'), handleUncaughtExceptions: true}}
 tests = {}
 sharedData = {}
+pad = (s) -> ("                                                          "+s).slice(-35)
 
 tests['init graph data'] = (cb) ->
     g = require('./graph')
@@ -13,7 +14,6 @@ tests['add node'] = (cb) ->
     await g.addNode {id:"Jonathon", friends:["Rebecca", "Jeremy"], phone:"0415 837 221"}, defer(Jonathon)
     await g.getAllNodes true, defer nodeList
     cb nodeList.length is 3
-    cb true
 
 tests['arbitrary fluid query example'] = (cb) ->
     g = sharedData['graph']
@@ -27,8 +27,19 @@ tests['wife'] = (cb) ->
     await g.v("Jonathon").get("wife").as(defer Rebecca)
     cb Rebecca[0].husband[0] is "Jonathon"
 
+testPass = 0
+testFail = 0
+console.log("-------------------------------------------------------------")
 for testName, test of tests
+    process.stdout.write pad(testName) + ": "
     await test defer(result)
-    console.log testName + ": " + (result ? "pass" : "fail")
+    if result
+        resultString = "pass"
+        testPass++
+    else
+        resultString = "fail"
+        testFail++
+    process.stdout.write resultString + "\r"
+console.log("-------------------------------------------------------------")
 
-#todo: find out why this isn't exiting when all callbacks have finished
+#todo: find out why this isn't exiting when all callbacks (appear to ) have finished

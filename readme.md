@@ -40,7 +40,7 @@ await graph.addInversion "husband", "wife", defer()
 await graph.addNode {id: "Rebecca", husband: ["Jonathon"]}, defer()
 await 
 	graph.getAllNodes true, defer allNodes
-	graph.v("Jonathon").get("wife").as(defer Rebecca)
+	graph.find("Jonathon").get("wife").as(defer Rebecca)
 	
 console.dir allNodes
 console.dir Rebecca

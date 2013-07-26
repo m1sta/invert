@@ -459,7 +459,7 @@ _break()
             _this = this;
           __iced_k = __iced_k_noop;
           ___iced_passed_deferral1 = iced.findDeferral(arguments);
-          if (!arguments[1]) {
+          if (!arguments[2]) {
             nodeId = arguments[0], callback = arguments[1];
             if (!callback) {
               callback = console.dir;
@@ -612,7 +612,7 @@ _break()
             }
           });
         };
-        _this.v = function() {
+        _this.v = _this.find = function() {
           /*
           todo: implement fluid query execution engine
           todo: add caching for getNode
@@ -623,7 +623,7 @@ _break()
 
           var addTraversalFunctions, executeNextStep, result;
           executeNextStep = function(obj) {
-            var cb, cbResult, currentNode, currentStep, expandedItem, group, groupFunction, groupFunctionResult, groupList, groupListIndex, groups, index, indexName, isActive, item, key, loopAgain, mapFunction, mapFunctionResult, nodeId, nodeIdIndex, nodeIdList, nodeList, outputData, outputPath, predicate, shrink, shrunkOutputData, stepIndex, stepName, stepResults, testKey, traversalItem, traversalItemIndex, value, ___iced_passed_deferral1, __iced_deferrals, __iced_k,
+            var cb, cbResult, currentNode, currentStep, expandedItem, group, groupFunction, groupFunctionResult, groupList, groupListIndex, groups, index, indexName, isActive, item, key, loopAgain, mapFunction, mapFunctionResult, nodeId, nodeIdIndex, nodeIdList, outputData, outputPath, predicate, shrink, shrunkOutputData, stepIndex, stepName, stepResults, testKey, traversalItem, traversalItemIndex, value, ___iced_passed_deferral1, __iced_deferrals, __iced_k,
               _this = this;
             __iced_k = __iced_k_noop;
             ___iced_passed_deferral1 = iced.findDeferral(arguments);
@@ -713,11 +713,11 @@ _break()
                         nodeIdList = currentStep.a[0];
                         indexName = null;
                       }
-                      if (!(nodeList instanceof Array)) {
-                        nodeList = [nodeList];
+                      if (!(nodeIdList instanceof Array)) {
+                        nodeIdList = [nodeIdList];
                       }
                       (function(__iced_k) {
-                        if (!nodeList[0]) {
+                        if (!nodeIdList[0]) {
                           (function(__iced_k) {
                             __iced_deferrals = new iced.Deferrals(__iced_k, {
                               parent: ___iced_passed_deferral1,
@@ -890,11 +890,12 @@ _break()
                                                       __iced_deferrals._fulfill();
                                                     })(function() {
                                                       outputPath = traversalItem.path.slice();
-                                                      outputPath(currentNode);
+                                                      outputPath.unshift(currentNode);
                                                       return _next(stepResults.push({
                                                         currentItem: expandedItem,
                                                         path: outputPath,
-                                                        loops: currentNode.loops
+                                                        loops: traversalItem.loops,
+                                                        data: traversalItem.data
                                                       }));
                                                     });
                                                   }
@@ -1253,7 +1254,7 @@ _break()
           };
           addTraversalFunctions = function(obj) {
             obj._steps = obj._steps || [];
-            obj.v = obj.query = function() {
+            obj.v = obj.find = function() {
               obj._steps.push({
                 c: 'v',
                 a: arguments
@@ -1331,7 +1332,7 @@ _break()
           result = addTraversalFunctions({
             _graph: this
           });
-          return result.query(arguments);
+          return result.find.apply(this, arguments);
         };
         if (graphCallback instanceof Function) {
           return graphCallback(self);

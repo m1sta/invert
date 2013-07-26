@@ -166,7 +166,7 @@ graph = (graphName, graphCallback, redisClient) =>
     this.getNode = () ->
 
          #handle getNode(nodeId)
-        if not arguments[1]
+        if not arguments[2]
             [nodeId, callback] = arguments
             if not callback then callback = console.dir
             await redisClient.hgetall nodePrefix + nodeId, defer(err, result)
@@ -225,7 +225,7 @@ graph = (graphName, graphCallback, redisClient) =>
                         formattedResult.push redisObjectToNode result
                         if formattedResult.length == results.length then (callback or console.dir) formattedResult
 
-    this.v = () ->
+    this.v = this.find = () ->
         ###
         todo: implement fluid query execution engine
         todo: add caching for getNode
@@ -291,9 +291,9 @@ graph = (graphName, graphCallback, redisClient) =>
                         nodeIdList = currentStep.a[0]
                         indexName = null
 
-                    if not (nodeList instanceof Array) then nodeList = [nodeList]
+                    if not (nodeIdList instanceof Array) then nodeIdList = [nodeIdList]
 
-                    if !nodeList[0]
+                    if !nodeIdList[0]
                         await obj._graph.getAllNodes(true, defer stepResults)
                     else
                         stepResults = []
@@ -322,8 +322,8 @@ graph = (graphName, graphCallback, redisClient) =>
                                 for nodeId, nodeIdIndex in currentNode[currentStep.a[0]]
                                     await obj._graph.getNode(nodeId, defer expandedItem) #todo: move the await so that this is done in parallel
                                     outputPath = traversalItem.path.slice()
-                                    outputPath currentNode
-                                    stepResults.push {currentItem: expandedItem, path:outputPath, loops:currentNode.loops}
+                                    outputPath.unshift currentNode
+                                    stepResults.push {currentItem: expandedItem, path:outputPath, loops:traversalItem.loops, data:traversalItem.data}
                             else
                                 outputPath = traversalItem.path.slice()
                                 outputPath.unshift traversalItem.currentItem
@@ -431,8 +431,8 @@ graph = (graphName, graphCallback, redisClient) =>
         addTraversalFunctions = (obj) ->
             obj._steps = obj._steps || []
             #todo: reconsider whether to keep the alias names
-            obj.v = obj.query = ()->
-                obj._steps.push {c:'v', a:arguments}
+            obj.v = obj.find = ()->
+                obj._steps.push {c:'v', a:arguments} #todo: explain why this is necessary
                 return obj
             obj.e = ()->
                 obj._steps.push {c:'e', a:arguments}
@@ -468,6 +468,6 @@ graph = (graphName, graphCallback, redisClient) =>
             return obj
 
         result = addTraversalFunctions {_graph:this}
-        result.query(arguments)
+        result.find.apply this, arguments
 
     if graphCallback instanceof Function then graphCallback self

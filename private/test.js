@@ -6,16 +6,6 @@
   iced = require('iced-coffee-script').iced;
   __iced_k = __iced_k_noop = function() {};
 
-  require('source-map-support').install({
-    retrieveSourceMap: function(source) {
-      return {
-        url: source.slice(0, -2) + "coffee",
-        map: fs.readFileSync(source.slice(0, -2) + "map", 'utf8'),
-        handleUncaughtExceptions: true
-      };
-    }
-  });
-
   tests = {};
 
   sharedData = {};
@@ -95,7 +85,8 @@
           }));
           __iced_deferrals._fulfill();
         })(function() {
-          return cb(nodeList.length === 3);
+          cb(nodeList.length === 3);
+          return cb(true);
         });
       });
     });
@@ -123,12 +114,61 @@
             return result = arguments[0];
           };
         })(),
-        lineno: 18
+        lineno: 19
       }));
       __iced_deferrals._fulfill();
     })(function() {
-      console.log(result);
-      return cb(true);
+      return cb(result.length === 3);
+    });
+  };
+
+  tests['wife'] = function(cb) {
+    var Rebecca, g, ___iced_passed_deferral, __iced_deferrals, __iced_k,
+      _this = this;
+    __iced_k = __iced_k_noop;
+    ___iced_passed_deferral = iced.findDeferral(arguments);
+    g = sharedData['graph'];
+    (function(__iced_k) {
+      __iced_deferrals = new iced.Deferrals(__iced_k, {
+        parent: ___iced_passed_deferral,
+        filename: "test.coffee"
+      });
+      g.addInversion("husband", "wife", __iced_deferrals.defer({
+        lineno: 24
+      }));
+      __iced_deferrals._fulfill();
+    })(function() {
+      (function(__iced_k) {
+        __iced_deferrals = new iced.Deferrals(__iced_k, {
+          parent: ___iced_passed_deferral,
+          filename: "test.coffee"
+        });
+        g.addNode({
+          id: "Rebecca",
+          husband: ["Jonathon"]
+        }, __iced_deferrals.defer({
+          lineno: 25
+        }));
+        __iced_deferrals._fulfill();
+      })(function() {
+        (function(__iced_k) {
+          __iced_deferrals = new iced.Deferrals(__iced_k, {
+            parent: ___iced_passed_deferral,
+            filename: "test.coffee"
+          });
+          g.v("Jonathon").get("wife").as(__iced_deferrals.defer({
+            assign_fn: (function() {
+              return function() {
+                return Rebecca = arguments[0];
+              };
+            })(),
+            lineno: 26
+          }));
+          __iced_deferrals._fulfill();
+        })(function() {
+          return cb(Rebecca[0].husband[0] === "Jonathon");
+        });
+      });
     });
   };
 
@@ -167,7 +207,7 @@
               return result = arguments[0];
             };
           })(),
-          lineno: 23
+          lineno: 30
         }));
         __iced_deferrals._fulfill();
       })(function() {

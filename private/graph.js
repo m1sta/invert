@@ -1189,7 +1189,7 @@ _break()
                                               traversalItem = _ref2[index];
                                               if (isActive(traversalItem)) {
                                                 traversalItem.path.unshift(traversalItem.currentItem);
-                                                traversalItem.currentItem = currentStep.a[0].constructor === String ? traversalItem.data[currentStep.a[0]] : traversalItem.path[stepCount];
+                                                traversalItem.currentItem = currentStep.a[0].constructor === String ? traversalItem.data[currentStep.a[0]] : traversalItem.path[currentStep.a[0]];
                                               }
                                               stepResults.push(traversalItem);
                                             }

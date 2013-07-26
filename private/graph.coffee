@@ -396,7 +396,7 @@ graph = (graphName, graphCallback, redisClient) =>
                     for traversalItem, index in obj._lastResult
                         if isActive traversalItem
                             traversalItem.path.unshift traversalItem.currentItem
-                            traversalItem.currentItem = if currentStep.a[0].constructor is String then traversalItem.data[currentStep.a[0]] else traversalItem.path[stepCount]
+                            traversalItem.currentItem = if currentStep.a[0].constructor is String then traversalItem.data[currentStep.a[0]] else traversalItem.path[currentStep.a[0]]
                         stepResults.push traversalItem
                     obj._lastResult = stepResults
                     executeNextStep obj

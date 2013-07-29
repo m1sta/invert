@@ -5,7 +5,6 @@ Fast, supports indexes, inversions, and pure javascript queries via traversal fu
 Automatic traversal-optimised multi-server sharding coming soon. Very early days.
 
 IcedCoffeeScript:
-
 ```coffeescript
 graphdb = require("./graph")
 await graphdb.getGraph "testGraph", defer(graph)
@@ -20,7 +19,6 @@ console.dir Rebecca
 ```
 
 Javascript:
-
 ```javascript
 graphdb = require('./graph')
 graphdb.getGraph('testGraph', function(graph){
